@@ -5,22 +5,26 @@ import { UsersService } from "../users.service";
 
 @Injectable()
 export class AuthenticationMiddleWare implements NestMiddleware {
-    constructor(private readonly service : UsersService) { }
+    constructor(private readonly service: UsersService) { }
 
     async use(req: Request, res: Response, next: NextFunction) {
-        let token = req.header('Authorization')
-        
-        if (!token || token === null || token === undefined || token === "undefined") {
-            return res.status(403).send("please login!")
-        }
-        token = token.replace('Bearer ', '')
+        try {
+            let token = req.header('Authorization')
 
-        const data = await jwt.verify(token, process.env.SECRET_CODE_JWT)
-        const user = await this.service.getUser(data.id)
+            if (!token || token === null || token === undefined || token === "undefined") {
+                return res.status(403).send("please login!")
+            }
+            token = token.replace('Bearer ', '')
 
-        if (!user) {
-            throw new BadRequestException("invalid_token");
+            const data = await jwt.verify(token, process.env.SECRET_CODE_JWT)
+            const user = await this.service.getUser(data.id)
+
+            if (!user) {
+                throw new BadRequestException("invalid_token");
+            }
+            return next()
+        } catch (error) {
+            return new BadRequestException(error)
         }
-        return next()
     }
 }
