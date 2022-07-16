@@ -7,6 +7,18 @@
 ```bash
 $ yarn
 ```
+## Migrations
+
+```bash
+# create migration file
+$ yarn run migrate:create <path>
+
+# run migration file
+$ yarn run migrate:up <path>
+
+# revert migration file
+$ yarn run migrate:down <path>
+```
 
 ## Running the app
 
